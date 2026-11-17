@@ -8,12 +8,14 @@ cd "$(dirname "$0")"
 
 VERSION="$(git describe --tags --match '[0-9]*.[0-9]*.[0-9]*' --always --dirty)"
 
-swift build -c release
+# Universal binary: Apple silicon and Intel.
+BUILD_ARGS=(-c release --arch arm64 --arch x86_64)
+swift build "${BUILD_ARGS[@]}"
 
 APP=build/Countdown.app
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS"
-cp "$(swift build -c release --show-bin-path)/Countdown" "$APP/Contents/MacOS/Countdown"
+cp "$(swift build "${BUILD_ARGS[@]}" --show-bin-path)/Countdown" "$APP/Contents/MacOS/Countdown"
 
 cat > "$APP/Contents/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
