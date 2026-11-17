@@ -12,7 +12,16 @@ Requires macOS 14 or later.
 
 Download `Countdown-x.y.z.zip` from [Releases](../../releases), unzip it, and move `Countdown.app` to `/Applications`.
 
-The app is not notarized, so the first time you open it, right-click it and choose **Open**.
+The app is not notarized, so macOS blocks it the first time. To allow it:
+
+1. Open `Countdown.app` once and dismiss the warning.
+2. Go to **System Settings → Privacy & Security**, scroll down and click **Open Anyway** next to the Countdown message, then confirm.
+
+Or remove the quarantine flag from Terminal:
+
+```sh
+xattr -dr com.apple.quarantine /Applications/Countdown.app
+```
 
 ## Build
 
