@@ -12,7 +12,7 @@ final class CountdownStore: ObservableObject {
         static let showTitle = "showTitle"
     }
 
-    private let defaults = UserDefaults.standard
+    private let defaults: UserDefaults
     private var timer: Timer?
     private var observers: [NSObjectProtocol] = []
 
@@ -30,13 +30,15 @@ final class CountdownStore: ObservableObject {
 
     @Published private(set) var now = Date()
 
-    init() {
+    init(defaults: UserDefaults = .standard, now: Date = Date()) {
+        self.defaults = defaults
+        self.now = now
         let calendar = Calendar.current
         if defaults.object(forKey: Key.targetDate) != nil {
             targetDate = Date(timeIntervalSince1970: defaults.double(forKey: Key.targetDate))
         } else {
             // First launch: default to 30 days from today.
-            targetDate = calendar.date(byAdding: .day, value: 30, to: calendar.startOfDay(for: Date()))!
+            targetDate = calendar.date(byAdding: .day, value: 30, to: calendar.startOfDay(for: now))!
         }
         title = defaults.string(forKey: Key.title) ?? ""
         showTitle = defaults.object(forKey: Key.showTitle) as? Bool ?? true
@@ -56,14 +58,20 @@ final class CountdownStore: ObservableObject {
 
     /// Calendar days from today to the target date (negative once it has passed).
     var daysRemaining: Int {
-        let calendar = Calendar.current
-        let from = calendar.startOfDay(for: now)
-        let to = calendar.startOfDay(for: targetDate)
-        return calendar.dateComponents([.day], from: from, to: to).day ?? 0
+        Self.days(from: now, to: targetDate)
     }
 
     var countdownText: String {
-        let days = daysRemaining
+        Self.countdownText(days: daysRemaining)
+    }
+
+    nonisolated static func days(from: Date, to: Date, calendar: Calendar = .current) -> Int {
+        let start = calendar.startOfDay(for: from)
+        let end = calendar.startOfDay(for: to)
+        return calendar.dateComponents([.day], from: start, to: end).day ?? 0
+    }
+
+    nonisolated static func countdownText(days: Int) -> String {
         switch days {
         case 0: return "Today"
         case 1: return "1 day"
