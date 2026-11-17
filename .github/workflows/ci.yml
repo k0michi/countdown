@@ -25,8 +25,10 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # git describe needs tags and history
       - name: Build app
-        run: ./build-app.sh "${GITHUB_REF_NAME}"
+        run: ./build-app.sh
       - name: Package
         run: ditto -c -k --keepParent build/Countdown.app "Countdown-${GITHUB_REF_NAME}.zip"
       - name: Create GitHub release

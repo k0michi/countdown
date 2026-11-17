@@ -1,10 +1,12 @@
 #!/bin/zsh
 # Builds Countdown.app (a menu bar-only app) into ./build.
-# Usage: ./build-app.sh [version]   (default: 0.0.0)
+# The version comes from `git describe`: "1.2.3" on an x.y.z tag,
+# "1.2.3-4-gabc1234" after it, "abc1234" with no tag, plus "-dirty"
+# when there are uncommitted changes.
 set -euo pipefail
 cd "$(dirname "$0")"
 
-VERSION="${1:-0.0.0}"
+VERSION="$(git describe --tags --match '[0-9]*.[0-9]*.[0-9]*' --always --dirty)"
 
 swift build -c release
 
@@ -31,4 +33,4 @@ cat > "$APP/Contents/Info.plist" <<PLIST
 PLIST
 
 codesign --force --sign - "$APP"
-echo "Built $APP"
+echo "Built $APP ($VERSION)"

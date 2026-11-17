@@ -46,6 +46,10 @@ struct SettingsView: View {
             Divider()
 
             HStack {
+                Text("Version \(appVersion)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .textSelection(.enabled)
                 Spacer()
                 Button("Quit Countdown") { NSApplication.shared.terminate(nil) }
                     .keyboardShortcut("q")
@@ -53,6 +57,10 @@ struct SettingsView: View {
         }
         .padding(16)
         .frame(width: 280)
+    }
+
+    private var appVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "dev"
     }
 
     private func setLaunchAtLogin(_ enabled: Bool) {
